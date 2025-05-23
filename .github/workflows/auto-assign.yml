@@ -1,19 +1,102 @@
+# Nome do workflow que aparecerá na aba Actions do GitHub
 name: Auto Assign
+
+# Define quando este workflow será executado
 on:
+  # Executa quando uma issue é criada
   issues:
     types: [opened]
+  # Executa quando um pull request é criado
   pull_request:
     types: [opened]
+
+# Define os jobs que serão executados
 jobs:
-  run:
+  auto-assign:
+    # Define em qual sistema operacional rodará
     runs-on: ubuntu-latest
+    
+    # Permissões necessárias para o workflow funcionar
     permissions:
       issues: write
       pull-requests: write
+    
+    # Passos que serão executados
     steps:
-    - name: 'Auto-assign issue'
-      uses: pozil/auto-assign-issue@v1
-      with:
+      # Atribuição automática para issues
+      - name: 'Auto-assign issue'
+        # Só executa se o evento for uma issue
+        if: github.event_name == 'issues'
+        uses: pozil/auto-assign-issue@v1
+        with:
+          # Token de autenticação do GitHub
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+          # Lista de usuários que podem ser atribuídos
           assignees: TalyLisboa
+          # Número de pessoas a serem atribuídas aleatoriamente
           numOfAssignee: 1
+          # Remove o autor da issue da lista de possíveis assignees
+          abortIfPreviousAssignees: true
+
+      # Atribuição automática para pull requests
+      - name: 'Auto-assign PR'
+        # Só executa se o evento for um pull request
+        if: github.event_name == 'pull_request'
+        uses: kentaro-m/auto-assign-action@v1.2.5
+        with:
+          # Token de autenticação
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          # Arquivo de configuração (opcional - pode criar um .github/auto_assign.yml)
+          configuration-path: ".github/auto_assign.yml"
+
+      # Adicionar label automática para novas issues
+      - name: 'Add labels to issue'
+        if: github.event_name == 'issues'
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: |
+            needs-triage
+            new-issue
+
+      # Adicionar label automática para novos PRs
+      - name: 'Add labels to PR'
+        if: github.event_name == 'pull_request'
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: |
+            needs-review
+            
+      # Comentário de boas-vindas em issues
+      - name: 'Welcome comment on issue'
+        if: github.event_name == 'issues'
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            👋 Obrigado por abrir esta issue, @${{ github.event.issue.user.login }}!
+            
+            Nossa equipe foi notificada e analisará sua solicitação em breve.
+            
+            **Próximos passos:**
+            - Um membro da equipe será atribuído automaticamente
+            - Analisaremos e priorizaremos sua solicitação
+            - Você receberá uma atualização assim que possível
+            
+            Se esta é uma questão urgente, adicione o label `urgent` ou mencione @TalyLisboa.
+
+      # Comentário de boas-vindas em PRs
+      - name: 'Welcome comment on PR'
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            🎉 Obrigado pela contribuição, @${{ github.event.pull_request.user.login }}!
+            
+            **Checklist de revisão:**
+            - [ ] O código segue nossos padrões
+            - [ ] Testes foram adicionados/atualizados
+            - [ ] Documentação foi atualizada
+            - [ ] Sem conflitos com a branch principal
+            
+            Um revisor será atribuído automaticamente. Enquanto isso, certifique-se de que todos os checks estão passando!
