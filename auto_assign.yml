@@ -1,0 +1,65 @@
+# Arquivo de configuração para auto-assign de Pull Requests
+# Localização: .github/auto_assign.yml
+
+# Adicionar revisores automaticamente quando PR é aberto
+addReviewers: true
+
+# Adicionar assignees automaticamente quando PR é aberto
+addAssignees: true
+
+# Lista de revisores a serem adicionados aos PRs
+reviewers:
+  - TalyLisboa
+  # Adicione outros membros da equipe conforme necessário
+  # - outro-membro
+  # - mais-um-membro
+
+# Lista de assignees a serem adicionados aos PRs
+assignees:
+  - TalyLisboa
+  # Adicione outros assignees se necessário
+
+# Número de revisores a serem atribuídos aleatoriamente
+# Define 0 para adicionar todos da lista
+numberOfReviewers: 1
+
+# Número de assignees a serem atribuídos
+numberOfAssignees: 1
+
+# Palavras-chave para pular a atribuição automática
+# Se o título do PR contiver alguma dessas palavras, não atribuirá automaticamente
+skipKeywords:
+  - wip
+  - draft
+  - "[WIP]"
+  - "[DRAFT]"
+  - "work in progress"
+
+# Usar grupos de revisão (teams do GitHub)
+# useReviewGroups: true
+
+# Grupos de revisores (descomente se usar teams)
+# reviewGroups:
+#   - lisboax-devs
+#   - backend-team
+
+# Usar grupos para assignees
+# useAssigneeGroups: true
+
+# Grupos de assignees (descomente se usar teams)
+# assigneeGroups:
+#   - lisboax-team
+
+# Filtrar por labels - só atribui se o PR tiver essas labels
+# filterLabels:
+#   include:
+#     - ready-for-review
+#   exclude:
+#     - do-not-review
+
+# Configurações avançadas para distribuição de carga
+# Tenta distribuir PRs igualmente entre os membros da equipe
+useLoadBalancing: true
+
+# Remove o autor do PR da lista de possíveis revisores
+excludeAuthor: true
